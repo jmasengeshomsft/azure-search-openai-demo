@@ -9,12 +9,12 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
-param virtualNetworkName string = 'open-ai-vnet001'
-param virtualNetworkResourceGroupName string = 'private-open-ai-demo'
+param virtualNetworkName string
+param virtualNetworkResourceGroupName string 
 param subnetName string = 'default'
-param webVnetIntegrationSubnetName string = 'app-service-integration'
+param webVnetIntegrationSubnetName string
 
-param AllowedIPAddresses array = []
+// param AllowedIPAddresses array = []
 
 param appServicePlanName string = ''
 param backendServiceName string = ''
@@ -285,7 +285,6 @@ module storage 'core/storage/storage-account.bicep' = {
         publicAccess: 'None'
       }
     ]
-    AllowedIPAddresses: AllowedIPAddresses
   }
 }
 
