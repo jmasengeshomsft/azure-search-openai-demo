@@ -29,7 +29,7 @@ resource search 'Microsoft.Search/searchServices@2021-04-01-preview' = {
       ipRules: []
     }
     partitionCount: 1
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: 'Disabled'
     replicaCount: 1
     semanticSearch: semanticSearch
   }

@@ -9,6 +9,10 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+param virtualNetworkName string = 'open-ai-vnet001'
+param virtualNetworkResourceGroupName string = 'private-open-ai-demo'
+param subnetName string = 'default'
+
 param appServicePlanName string = ''
 param backendServiceName string = ''
 param resourceGroupName string = ''
@@ -72,7 +76,21 @@ resource storageResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' ex
   name: !empty(storageResourceGroupName) ? storageResourceGroupName : resourceGroup.name
 }
 
-// Create an App Service Plan to group applications under the same payment plan and SKU
+// Networking Configurations
+// load an existing virtual network
+resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
+  name: virtualNetworkName
+  scope: az.resourceGroup(virtualNetworkResourceGroupName)
+}
+
+// // load an existing subnet
+// resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
+//   name: subnetName
+//   parent: vnet
+// }
+
+
+//Create an App Service Plan to group applications under the same payment plan and SKU
 module appServicePlan 'core/host/appserviceplan.bicep' = {
   name: 'appserviceplan'
   scope: resourceGroup
@@ -150,6 +168,20 @@ module openAi 'core/ai/cognitiveservices.bicep' = {
   }
 }
 
+module openAiPrivateEndpoint 'core/private-endpoint/private-endpoint.bicep' = {
+  name: 'openAi-private-endpoint'
+  scope: openAiResourceGroup
+  params: {
+    name: openAi.outputs.name
+    location: openAiResourceGroupLocation
+    resourceId: openAi.outputs.id
+    vnetId: vnet.id
+    subnetId: '${vnet.id}/subnets/${subnetName}'
+    resourceEndpointType: 'account'
+    privateDnsZoneName: 'privatelink.openai.azure.com' 
+  }
+}
+
 module formRecognizer 'core/ai/cognitiveservices.bicep' = {
   name: 'formrecognizer'
   scope: formRecognizerResourceGroup
@@ -161,6 +193,20 @@ module formRecognizer 'core/ai/cognitiveservices.bicep' = {
     sku: {
       name: formRecognizerSkuName
     }
+  }
+}
+
+module formRecognizerPrivateEndpoint 'core/private-endpoint/private-endpoint.bicep' = {
+  name: 'formRecognizer-private-endpoint'
+  scope: formRecognizerResourceGroup
+  params: {
+    name: formRecognizer.outputs.name
+    location: formRecognizerResourceGroupLocation
+    resourceId: formRecognizer.outputs.id
+    vnetId: vnet.id
+    subnetId: '${vnet.id}/subnets/${subnetName}'
+    resourceEndpointType: 'account'
+    privateDnsZoneName: 'privatelink.cognitiveservices.azure.com' 
   }
 }
 
@@ -180,6 +226,21 @@ module searchService 'core/search/search-services.bicep' = {
       name: searchServiceSkuName
     }
     semanticSearch: 'free'
+  }
+}
+
+//create search service private endpoint using the module private-endpoint.bicep
+module searchServicePrivateEndpoint 'core/private-endpoint/private-endpoint.bicep' = {
+  name: 'search-service-private-endpoint'
+  scope: searchServiceResourceGroup
+  params: {
+    name: searchService.outputs.name
+    location: searchServiceResourceGroupLocation
+    resourceId: searchService.outputs.id
+    vnetId: vnet.id
+    subnetId: '${vnet.id}/subnets/${subnetName}'
+    resourceEndpointType: 'searchService'
+    privateDnsZoneName: 'privatelink.search.windows.net' 
   }
 }
 
@@ -204,6 +265,20 @@ module storage 'core/storage/storage-account.bicep' = {
         publicAccess: 'None'
       }
     ]
+  }
+}
+
+module storagePrivateEndpoint 'core/private-endpoint/private-endpoint.bicep' = {
+  name: 'storage-private-endpoint'
+  scope: storageResourceGroup
+  params: {
+    name: storage.outputs.name
+    location: storageResourceGroupLocation
+    resourceId: storage.outputs.id
+    vnetId: vnet.id
+    subnetId: '${vnet.id}/subnets/${subnetName}'
+    resourceEndpointType: 'blob'
+    privateDnsZoneName: 'privatelink.blob.core.windows.net' 
   }
 }
 
