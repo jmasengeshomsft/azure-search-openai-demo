@@ -12,6 +12,9 @@ param location string
 param virtualNetworkName string = 'open-ai-vnet001'
 param virtualNetworkResourceGroupName string = 'private-open-ai-demo'
 param subnetName string = 'default'
+param webVnetIntegrationSubnetName string = 'app-service-integration'
+
+param AllowedIPAddresses array = []
 
 param appServicePlanName string = ''
 param backendServiceName string = ''
@@ -128,8 +131,24 @@ module backend 'core/host/appservice.bicep' = {
       AZURE_OPENAI_GPT_DEPLOYMENT: gptDeploymentName
       AZURE_OPENAI_CHATGPT_DEPLOYMENT: chatGptDeploymentName
     }
+    virtualNetworkSubnetId: '${vnet.id}/subnets/${webVnetIntegrationSubnetName}'
   }
 }
+
+module backendPrivateEndpoint 'core/private-endpoint/private-endpoint.bicep' = {
+  name: 'backend-private-endpoint'
+  scope: resourceGroup
+  params: {
+    name: backend.outputs.name
+    location: location
+    resourceId: backend.outputs.id
+    vnetId: vnet.id
+    subnetId: '${vnet.id}/subnets/${subnetName}'
+    resourceEndpointType: 'sites'
+    privateDnsZoneName: 'privatelink.azurewebsites.net' 
+  }
+}
+
 
 module openAi 'core/ai/cognitiveservices.bicep' = {
   name: 'openai'
@@ -226,6 +245,7 @@ module searchService 'core/search/search-services.bicep' = {
       name: searchServiceSkuName
     }
     semanticSearch: 'free'
+    //AllowedIPAddresses: AllowedIPAddresses
   }
 }
 
@@ -251,7 +271,7 @@ module storage 'core/storage/storage-account.bicep' = {
     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
     location: storageResourceGroupLocation
     tags: tags
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: 'Disabled'
     sku: {
       name: 'Standard_ZRS'
     }
@@ -265,6 +285,7 @@ module storage 'core/storage/storage-account.bicep' = {
         publicAccess: 'None'
       }
     ]
+    AllowedIPAddresses: AllowedIPAddresses
   }
 }
 

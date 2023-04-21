@@ -9,6 +9,8 @@ param sku object = {
 param authOptions object = {}
 param semanticSearch string = 'disabled'
 
+param AllowedIPAddresses array = []
+
 resource search 'Microsoft.Search/searchServices@2021-04-01-preview' = {
   name: name
   location: location
@@ -26,7 +28,8 @@ resource search 'Microsoft.Search/searchServices@2021-04-01-preview' = {
     hostingMode: 'default'
     networkRuleSet: {
       bypass: 'None'
-      ipRules: []
+      ipRules: AllowedIPAddresses
+
     }
     partitionCount: 1
     publicNetworkAccess: 'Disabled'

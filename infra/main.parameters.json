@@ -43,6 +43,15 @@
     },
     "storageResourceGroupName": {
       "value": "${AZURE_STORAGE_RESOURCE_GROUP}"
+    },
+    "virtualNetworkName": {
+      "value": "${virtualNetworkName}"
+    },
+    "virtualNetworkResourceGroupName": {
+      "value": "${virtualNetworkResourceGroupName}"
+    },
+    "webVnetIntegrationSubnetName": {
+      "value": "${webVnetIntegrationSubnetName}"
     }
   }
 }

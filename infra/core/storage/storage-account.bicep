@@ -19,6 +19,8 @@ param sku object = { name: 'Standard_LRS' }
 
 param containers array = []
 
+param AllowedIPAddresses array = []
+
 resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' = {
   name: name
   location: location
@@ -36,6 +38,10 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' = {
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
+      ipRules: [for ip in AllowedIPAddresses: {
+        value: ip
+        action: 'Allow'
+      }]
     }
     publicNetworkAccess: publicNetworkAccess
   }
