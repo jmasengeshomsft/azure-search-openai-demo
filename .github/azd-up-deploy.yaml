@@ -18,7 +18,7 @@ jobs:
           curl -fsSL https://aka.ms/install-azd.sh | bash
       - name: Login with AzD 
         run: |
-          azd auth login --tenant-id {{ secrets.AZURE_TENANT_ID }} --client-id {{ secrets.AZURE_CLIENT_ID }} --client-secret {{ secrets.CLIENT_SECRET }}
+          azd auth login --tenant-id ${{ secrets.AZURE_TENANT_ID }} --client-id ${{ secrets.AZURE_CLIENT_ID }} --client-secret ${{ secrets.CLIENT_SECRET }}
       - name: AzD Init
         run : |
           azd init -t azure-search-openai-demo
