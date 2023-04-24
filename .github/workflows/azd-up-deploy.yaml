@@ -24,4 +24,4 @@ jobs:
           azd init -e ${{ secrets.AZURE_ENV_NAME }}-${{ github.run_id }} --no-prompt 
       - name: AzD Up
         run : |
-          azd deploy -e ${{ secrets.AZURE_ENV_NAME }}-${{ github.run_id }} --no-prompt 
+          azd up -e ${{ secrets.AZURE_ENV_NAME }}-${{ github.run_id }} --no-prompt --subscriptionId ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
