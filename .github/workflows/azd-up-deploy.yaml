@@ -21,7 +21,7 @@ jobs:
           azd auth login --tenant-id ${{ secrets.AZURE_TENANT_ID }} --client-id ${{ secrets.AZURE_CLIENT_ID }} --client-secret ${{ secrets.CLIENT_SECRET }}
       - name: AzD Init
         run : |
-          azd init -e ${{ secrets.AZURE_ENVIRONMENT }}} -t azure-search-openai-demo --no-prompt 
+          azd init -e ${{ secrets.AZURE_ENVIRONMENT }}-${{ github.run_id }} -t azure-search-openai-demo --no-prompt 
       - name: AzD Up
         run : |
-          azd up -e ${{ secrets.AZURE_ENVIRONMENT }}} --no-prompt 
+          azd up -e ${{ secrets.AZURE_ENVIRONMENT }}-${{ github.run_id }} --no-prompt 
