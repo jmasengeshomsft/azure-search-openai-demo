@@ -34,7 +34,10 @@ param storageContainerName string = 'content'
 
 param openAiServiceName string = ''
 param openAiResourceGroupName string = ''
-param openAiResourceGroupLocation string = location
+param openAiResourceGroupLocation string = ''
+param openAiPEVnetName string = ''
+param openAiPEVnetResourceGroupName string = ''
+param openAiPEVnetSubnetName string = ''
 
 param openAiSkuName string = 'S0'
 
@@ -86,11 +89,11 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
   scope: az.resourceGroup(virtualNetworkResourceGroupName)
 }
 
-// // load an existing subnet
-// resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-//   name: subnetName
-//   parent: vnet
-// }
+//open ai vnet
+resource openaivnet 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
+  name: openAiPEVnetName
+  scope: az.resourceGroup(openAiPEVnetResourceGroupName)
+}
 
 
 //Create an App Service Plan to group applications under the same payment plan and SKU
@@ -194,8 +197,8 @@ module openAiPrivateEndpoint 'core/private-endpoint/private-endpoint.bicep' = {
     name: openAi.outputs.name
     location: openAiResourceGroupLocation
     resourceId: openAi.outputs.id
-    vnetId: vnet.id
-    subnetId: '${vnet.id}/subnets/${subnetName}'
+    vnetId: openaivnet.id
+    subnetId: '${vnet.id}/subnets/${openAiPEVnetSubnetName}'
     resourceEndpointType: 'account'
     privateDnsZoneName: 'privatelink.openai.azure.com' 
   }

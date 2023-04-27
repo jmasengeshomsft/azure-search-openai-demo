@@ -17,8 +17,20 @@
     "openAiResourceGroupName": {
       "value": "${AZURE_OPENAI_RESOURCE_GROUP}"
     },
+    "openAiResourceGroupLocation": {
+      "value": "${AZURE_OPENAI_LOCATION}"
+    },
     "openAiSkuName": {
       "value": "S0"
+    },
+    "openAiPEVnetName": {
+      "value": "${AZURE_OPENAI_PE_VNET_NAME}"
+    },
+    "openAiPEVnetResourceGroupName": {
+      "value": "${AZURE_OPENAI_PE_VNET_RESOURCE_GROUP}"
+    },
+    "openAiPEVnetSubnetName": {
+      "value": "${AZURE_OPENAI_PE_SUBNET_NAME}"
     },
     "formRecognizerServiceName": {
       "value": "${AZURE_FORMRECOGNIZER_SERVICE}"
