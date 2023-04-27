@@ -45,13 +45,16 @@
       "value": "${AZURE_STORAGE_RESOURCE_GROUP}"
     },
     "virtualNetworkName": {
-      "value": "${virtualNetworkName}"
+      "value": "${VNET_NAME}"
     },
     "virtualNetworkResourceGroupName": {
-      "value": "${virtualNetworkResourceGroupName}"
+      "value": "${VNET_RESOURCE_GROUP}"
+    },
+    "subnetName": {
+      "value": "${PRIVATE_ENDPOINT_SUBNET_NAME}"
     },
     "webVnetIntegrationSubnetName": {
-      "value": "${webVnetIntegrationSubnetName}"
+      "value": "${VNET_INTEGRATION_SUBNET_NAME}"
     }
   }
 }
