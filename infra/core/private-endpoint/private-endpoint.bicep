@@ -3,6 +3,7 @@ param name string
 param resourceId string  
 param resourceEndpointType string
 param location string
+param additionalDNSLinkedVnets array = []
 
 
 
@@ -48,6 +49,18 @@ resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLin
     }
   }
 }
+
+resource additionalPrivateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = [for id in additionalDNSLinkedVnets: {
+  parent: privateDnsZone
+  name: split(id, '/')[8] // use the vnet name as the link name
+  location: 'global'
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: id
+    }
+  }
+}]
 
 resource pvtEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2021-05-01' = {
   name: '${privateEndpoint.name}/default'

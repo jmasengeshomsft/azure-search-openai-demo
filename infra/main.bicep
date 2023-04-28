@@ -14,7 +14,7 @@ param virtualNetworkResourceGroupName string
 param subnetName string = 'default'
 param webVnetIntegrationSubnetName string
 
-// param AllowedIPAddresses array = []
+param additionalDNSLinkedVnets array = ['/subscriptions/5a552781-da94-4df2-b0d3-e36e2a4de7f9/resourceGroups/aks-e-essentials/providers/Microsoft.Network/virtualNetworks/AKS-EDGE-SERVER-vnet']  //ability to link additional vnets to the private endpoint dns zone
 
 param appServicePlanName string = ''
 param backendServiceName string = ''
@@ -148,7 +148,8 @@ module backendPrivateEndpoint 'core/private-endpoint/private-endpoint.bicep' = {
     vnetId: vnet.id
     subnetId: '${vnet.id}/subnets/${subnetName}'
     resourceEndpointType: 'sites'
-    privateDnsZoneName: 'privatelink.azurewebsites.net' 
+    privateDnsZoneName: 'privatelink.azurewebsites.net'
+    additionalDNSLinkedVnets: additionalDNSLinkedVnets 
   }
 }
 
