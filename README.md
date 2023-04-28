@@ -77,6 +77,19 @@ It will look like the following:
 
 > NOTE: You can also use existing Search and Storage Accounts.  See `./infra/main.parameters.json` for list of environment variables to pass to `azd env set` to configure those existing resources.
 
+#### Deploying the solution behind a virtual network using Private Endpoints and Vnet Integration:
+
+Run `azd env set VNET_NAME {existing vnet}`
+Run `azd env set VNET_RESOURCE_GROUP {exising vnet rg}`
+Run `azd env set PRIVATE_ENDPOINT_SUBNET_NAME {existing subnet for Private Endpoint like /27}`
+Run `azd env set VNET_INTEGRATION_SUBNET_NAME {existing subnet for Vnet Integration for the webapp. Enable Microsoft.Web/serverFarms delegation}`
+
+Run `azd env set AZURE_OPENAI_RESOURCE_GROUP {existing resource group for the open AI resource}`
+Run `azd env set AZURE_OPENAI_LOCATION {the location for the open AI resource}`
+Run `azd env set AZURE_OPENAI_PE_VNET_NAME {existing the vnet for the open AI resource}`
+Run `azd env set AZURE_OPENAI_PE_VNET_RESOURCE_GROUP {existing vnet resource group}`
+Run `azd env set AZURE_OPENAI_PE_SUBNET_NAME {existing subnet for open AI resource PE}`
+
 #### Deploying or re-deploying a local clone of the repo:
 * Simply run `azd up`
 
