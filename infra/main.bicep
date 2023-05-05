@@ -196,10 +196,10 @@ module openAiPrivateEndpoint 'core/private-endpoint/private-endpoint.bicep' = {
   scope: openAiResourceGroup
   params: {
     name: openAi.outputs.name
-    location: openAiResourceGroupLocation
+    location: location
     resourceId: openAi.outputs.id
-    vnetId: openaivnet.id
-    subnetId: '${openaivnet.id}/subnets/${openAiPEVnetSubnetName}'
+    vnetId: vnet.id
+    subnetId: '${vnet.id}/subnets/${subnetName}'
     resourceEndpointType: 'account'
     privateDnsZoneName: 'privatelink.openai.azure.com' 
   }
