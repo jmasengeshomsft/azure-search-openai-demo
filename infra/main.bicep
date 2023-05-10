@@ -195,7 +195,7 @@ module openAiPrivateEndpoint 'core/private-endpoint/private-endpoint.bicep' = {
   name: 'openAi-private-endpoint'
   scope: openAiResourceGroup
   params: {
-    name: openAi.outputs.name
+    name: '${openAi.outputs.name}-pe'
     location: location
     resourceId: openAi.outputs.id
     vnetId: vnet.id
