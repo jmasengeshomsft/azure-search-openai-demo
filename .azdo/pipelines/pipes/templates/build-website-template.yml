@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------------------------------------
 parameters: 
 - name: variableGroupName
-  default:  'azure-search-openai-demo'
+  default:  'OpenAISearch'
 - name: environmentName
   default:  'dev'
 - name: appFolderName

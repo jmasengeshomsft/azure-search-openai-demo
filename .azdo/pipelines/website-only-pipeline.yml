@@ -18,16 +18,10 @@ trigger:
   paths:
     include:
       - 'app/*'
-  #   exclude: 
-  #     - '**/*.yml'
-  #     - '**/*.yaml'
-  #     - '**/*.bicep'
-  #     - '**/*.md'
-
 # ----------------------------------------------------------------------------------------------------
 stages:
 - template: pipes/website-only-pipe.yml
   parameters:
     variableGroupName: 'OpenAISearch'
-    environments: ['dev'] # ['DEV','QA', 'PROD']
+    environments: ['dev']
     appFolderName: 'app'
