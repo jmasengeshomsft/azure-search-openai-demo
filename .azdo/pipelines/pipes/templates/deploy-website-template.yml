@@ -37,7 +37,7 @@ jobs:
   #     destinationFolder: $(Pipeline.Workspace)/publish
 
   - bash: |
-      backendServiceNameEnv=$(echo "$(backendServiceNamePrefix)-$(environmentNameLower)" | tr '[:upper:]' '[:lower:]')
+      backendServiceNameEnv='app-backend-7fr4w73pcqaoq'
       echo "backendServiceNameEnv=$backendServiceNameEnv"
       echo "##vso[task.setvariable variable=backendServiceNameEnv]$backendServiceNameEnv"
     displayName: 'Create Variables'
