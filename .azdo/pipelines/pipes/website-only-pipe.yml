@@ -61,7 +61,7 @@ stages:
     parameters:
       variableGroupName: ${{ parameters.variableGroupName }}
       environmentName: 'dev'
-      appFolderName: ${{ parametes.appFolderName }}
+      appFolderName: ${{ parameters.appFolderName }}
 
 # ----------------------------------------------------------------------------------------------------
 - ${{ each environmentName in parameters.environments }} :
