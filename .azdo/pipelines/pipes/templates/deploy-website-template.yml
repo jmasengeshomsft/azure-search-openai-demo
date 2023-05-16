@@ -46,8 +46,8 @@ jobs:
     inputs:
       script: |
         echo "serviceConnectionName=$(serviceConnectionName)"
-        echo "environmentNameLower=$(environmentNameLower)"
-        echo "backendServiceNamePrefix=$(backendServiceNamePrefix)"
+        # echo "environmentNameLower=$(environmentNameLower)"
+        # echo "backendServiceNamePrefix=$(backendServiceNamePrefix)"
         echo "backendServiceNameEnv=$(backendServiceNameEnv)"
         echo "zipFileName=$(zipFileName)"
         echo "Pipeline workspace: $(Pipeline.Workspace)"

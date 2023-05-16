@@ -64,11 +64,11 @@ stages:
       appFolderName: ${{ parameters.appFolderName }}
 
 # ----------------------------------------------------------------------------------------------------
-# - ${{ each environmentName in parameters.environments }} :
-#   - stage: Deploy${{ environmentName }}App
-#     displayName: Deploy ${{ environmentName }} App
-#     jobs:
-#     - template: templates/deploy-website-template.yml
-#       parameters:
-#         variableGroupName: ${{ parameters.variableGroupName }}
-#         environmentName: ${{ environmentName }}
+- ${{ each environmentName in parameters.environments }} :
+  - stage: Deploy${{ environmentName }}App
+    displayName: Deploy ${{ environmentName }} App
+    jobs:
+    - template: templates/deploy-website-template.yml
+      parameters:
+        variableGroupName: ${{ parameters.variableGroupName }}
+        environmentName: ${{ environmentName }}
