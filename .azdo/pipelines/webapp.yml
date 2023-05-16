@@ -18,6 +18,22 @@ trigger:
   # paths:
   #   include:
   #     - 'app/*'
+variables:
+  - name: appFolderName
+    value: 'app'
+  - name: zipFileName
+    value: 'App.zip'
+  - name: appDirectory
+    value: '$(System.DefaultWorkingDirectory)/$(appFolderName)'
+  - name: frontEndDirectory
+    value: '$(System.DefaultWorkingDirectory)/$(appFolderName)/frontend/'
+  - name: backendDirectory
+    value: '$(System.DefaultWorkingDirectory)/$(appFolderName)/backend/'
+  - name: appServiceName
+    value: 'app-backend-7fr4w73pcqaoq'
+  - name: serviceConnectionName
+    value: 'jm-open-ai-sp'
+  
 # ----------------------------------------------------------------------------------------------------
 stages:
 - stage: BuildWebApp
@@ -29,18 +45,6 @@ stages:
 
   - job: BuildWebApp
     displayName: Build Web App
-
-    variables:
-      - name: appFolderName
-        value: 'app'
-      - name: zipFileName
-        value: 'App.zip'
-      - name: appDirectory
-        value: '$(System.DefaultWorkingDirectory)/$(appFolderName)'
-      - name: frontEndDirectory
-        value: '$(System.DefaultWorkingDirectory)/$(appFolderName)/frontend/'
-      - name: backendDirectory
-        value: '$(System.DefaultWorkingDirectory)/$(appFolderName)/backend/'
 
     steps:
     - task: CmdLine@2
@@ -59,14 +63,6 @@ stages:
       displayName: 'Set Python Version'
       inputs:
         versionSpec: 3.8
-
-    # - bash: |
-    #     cd $(System.DefaultWorkingDirectory)
-    #     python -m pip install --upgrade pip
-    #     python -m venv scripts/.venv
-    #     source scripts/.venv/bin/activate
-    #     pip install -r ./scripts/requirements.txt
-    #   displayName: 'Install Dependencies'
 
     - bash: |
         cd $(backendDirectory)
@@ -103,3 +99,41 @@ stages:
     - upload: $(Build.ArtifactStagingDirectory)/$(zipFileName)
       displayName: 'Upload package'
       artifact: drop
+
+- stage: DeployWebApp
+  displayName: Deploy Web App
+  dependsOn: BuildWebApp
+  jobs:
+  - deployment: DeployWebsite
+    displayName: Initialize Deploy Website
+    environment: dev
+  - job: DeployWebApp
+    displayName: Deploy Website
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Artifacts'
+      inputs:
+        artifact: drop
+
+    - task: CmdLine@2
+      inputs:
+        script: |
+          echo "serviceConnectionName=$(serviceConnectionName)"
+          echo "appServiceName=$(appServiceName)"
+          echo "zipFileName=$(zipFileName)"
+          echo "Pipeline workspace: $(Pipeline.Workspace)"
+          echo "DefaultWorkingDirectory: $(System.DefaultWorkingDirectory)"
+          echo "Directory of pipeline workspace:"
+          tree $(Pipeline.Workspace)
+      displayName: 'Display Variables and Tree'
+      continueOnError: true
+
+    - task: AzureRmWebAppDeployment@4
+      displayName: 'Publish App to Azure'
+      inputs:
+        ConnectionType: AzureRM
+        azureSubscription: $(serviceConnectionName)
+        appType: webAppLinux
+        WebAppName: $(appServiceName)
+        packageForLinux: $(Pipeline.Workspace)/$(zipFileName)
+        deploymentMethod: zipDeployment
