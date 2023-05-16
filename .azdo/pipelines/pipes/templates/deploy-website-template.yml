@@ -61,7 +61,7 @@ jobs:
     displayName: 'Publish App to Azure'
     inputs:
       ConnectionType: AzureRM
-      azureSubscription: $(serviceConnectionName)
+      azureSubscription: 'jm-open-ai-sp' #$(serviceConnectionName)
       appType: webAppLinux
       WebAppName: $(backendServiceNameEnv)
       packageForLinux: $(Pipeline.Workspace)/$(zipFileName)

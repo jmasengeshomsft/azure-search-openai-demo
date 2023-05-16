@@ -4,7 +4,7 @@
 parameters:
 - name: environments
   type: object
-  default: ['DEMO']
+  default: ['dev']
 - name: variableGroupName
   default: 'myVariableGroupName'
 - name: runDevSecOpsScan
