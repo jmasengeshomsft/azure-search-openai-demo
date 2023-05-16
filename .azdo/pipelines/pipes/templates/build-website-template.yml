@@ -3,9 +3,9 @@
 # ----------------------------------------------------------------------------------------------------
 parameters: 
 - name: variableGroupName
-  default:  'myVariableGroup'
+  default:  'azure-search-openai-demo'
 - name: environmentName
-  default:  'DEMO'
+  default:  'dev'
 - name: appFolderName
   default: 'app'
 - name: zipFileName
