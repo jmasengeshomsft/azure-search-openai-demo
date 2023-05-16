@@ -54,8 +54,6 @@ stages:
           echo "appDirectory=$(appDirectory)"
           echo "frontEndDirectory=$(frontEndDirectory)"
           echo "backendDirectory=$(backendDirectory)"
-          echo "Directory of System.DefaultWorkingDirectory:"
-          tree $(System.DefaultWorkingDirectory)
       displayName: 'Display Variables'
       continueOnError: true
 
@@ -123,9 +121,7 @@ stages:
           echo "zipFileName=$(zipFileName)"
           echo "Pipeline workspace: $(Pipeline.Workspace)"
           echo "DefaultWorkingDirectory: $(System.DefaultWorkingDirectory)"
-          echo "Directory of pipeline workspace:"
-          tree $(Pipeline.Workspace)
-      displayName: 'Display Variables and Tree'
+      displayName: 'Display Variables'
       continueOnError: true
 
     - task: AzureRmWebAppDeployment@4
