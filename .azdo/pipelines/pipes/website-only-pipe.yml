@@ -1,0 +1,74 @@
+# ------------------------------------------------------------------------------------------------------------------------
+# Pipeline Template to build application and deploy it to multiple optional environments
+# ------------------------------------------------------------------------------------------------------------------------
+parameters:
+- name: environments
+  type: object
+  default: ['DEMO']
+- name: variableGroupName
+  default: 'myVariableGroupName'
+- name: appFolderName
+  default: 'app'
+
+#variables [not using variable groups]
+# location='eastus'
+# resourceGroupDev='rg_openaisearch_dev'
+# resourceGroupQA='rg_openaisearch_qa'
+# resourceGroupProd='rg_openaisearch_prod'
+# serviceConnectionName='<yourServiceConnection>'
+# subscriptionId='<yourSubscriptionId>'
+# subscriptionName='<yourAzureSubscriptionName>'
+# adTenantId='<yourTenantId>'
+# adClientId='<yourClientId>'
+# adClientSecret='<yourClientSecret>'
+# # SID for user that will be granted roles to the OpenAI resources
+# userPrincipalId='<youruserguid>'
+# # if you want to use a specific suffix for your resources instead of a random token, specify this value
+# appSuffix='xxxoai'
+# resourceToken='xxxoai'
+# # if you want to use a specific name for the web application
+# backendServiceNamePrefix='xxx-openai-search'
+# # if you want to SKIP the re-deploy of the OpenAI resources (which take a long time)
+# deployFormsRecognizerResources=false
+# deployOpenAIResources=false
+# e: you will have to update create-template-infra.yml to pass the following optional variables in to main.bicep
+# # if you have existing OpenAI resource specify it here
+# openAiServiceName='<yourOpenAIServiceName>'
+# openAiResourceGroupName='<yourOpenAIResourceGroupName>'
+# # if you have existing model deploys with different names
+# openAiGptDeployName='gpt35'
+# openAiDavinciDeployName='text-davinici-003'
+# # if you want specific names for other services, specify them here
+# openAiSkuName='S0'
+# formRecognizerResourceGroupName='<yourFormRecognizerResourceGroupName>'
+# formRecognizerServiceName='<yourFormRecognizerServiceName>'
+# formRecognizerSkuName='S0'
+# storageResourceGroupName='<yourStorageResourceGroupName>'
+# storageAccountName='<yourStorageAccountName>'
+
+
+
+#-----end
+
+
+
+# ----------------------------------------------------------------------------------------------------
+stages:
+- stage: BuildWebApp
+  displayName: Build Web App
+  jobs:
+  - template: templates/build-website-template.yml
+    parameters:
+      variableGroupName: ${{ parameters.variableGroupName }}
+      environmentName: 'DEMO'
+      appFolderName: ${{ parameters.appFolderName }}
+
+# ----------------------------------------------------------------------------------------------------
+- ${{ each environmentName in parameters.environments }} :
+  - stage: Deploy${{ environmentName }}App
+    displayName: Deploy ${{ environmentName }} App
+    jobs:
+    - template: templates/deploy-website-template.yml
+      parameters:
+        variableGroupName: ${{ parameters.variableGroupName }}
+        environmentName: ${{ environmentName }}
