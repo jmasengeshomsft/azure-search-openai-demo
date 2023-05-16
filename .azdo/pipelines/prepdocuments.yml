@@ -1,0 +1,93 @@
+# ------------------------------------------------------------------------------------------------------------------------
+# Pipeline to update the search index only
+# See readme file for info about variable group 'OpenAISearch'
+# ------------------------------------------------------------------------------------------------------------------------
+name: $(date:yyyy).$(date:MM).$(date:dd)$(rev:.r)
+
+pool:
+  vmImage: ubuntu-latest
+
+# ----------------------------------------------------------------------------------------------------
+trigger:
+  # since this repo has both AzDO and GHA pipelines, nothing is run automatically...
+  - none
+  # batch: true
+  # branches:
+  #   include:
+  #     - main
+  # paths:
+  #   include:
+  #     - 'src/*'
+  #   exclude: 
+  #     - '**/*.yml'
+  #     - '**/*.yaml'
+  #     - '**/*.bicep'
+  #     - '**/*.md'
+
+# ----------------------------------------------------------------------------------------------------
+variables:
+  - name: STARTUP_COMMAND
+    value: '' 
+  - name: AZURE_STORAGE_CONTAINER
+    value: 'content'
+  - name: AZURE_SEARCH_INDEX
+    value: 'gptkbindex'
+  - name: AZURE_STORAGE_ACCOUNT
+    value: 'st7fr4w73pcqaoq'
+  - name: AZURE_SEARCH_SERVICE
+    value: 'gptkb-7fr4w73pcqaoq'
+  - name: AZURE_FORMRECOGNIZER_SERVICE
+    value: 'cog-fr-7fr4w73pcqaoq'
+  - group: OpenAISearch
+
+# ------------------------------------------------------------------------------------------------------------------------
+stages:
+- stage: PrepDocs
+  displayName: Index Documents
+  jobs:
+  - deployment: UpdateSearch
+    displayName: Initialize Update Search
+    environment: 'dev'
+
+  - job: UpdateIndexSearch
+    displayName: Update Search
+        
+    steps:
+    - bash: |
+        echo "AZURE_STORAGE_ACCOUNT=$(AZURE_STORAGE_ACCOUNT)"
+        echo "AZURE_SEARCH_SERVICE=$(AZURE_SEARCH_SERVICE)"
+        echo "AZURE_FORMRECOGNIZER_SERVICE=$(AZURE_FORMRECOGNIZER_SERVICE)"
+        echo "adTenantId=$(adTenantId)"
+        echo "adClientId=$(adClientId)"
+        echo "adClientSecret=$(adClientSecret)"
+      displayName: 'List Variables and Files'
+      continueOnError: true
+
+    - task: UsePythonVersion@0
+      displayName: 'Set Python Version'
+      inputs:
+        versionSpec: 3.8
+
+    - bash: |
+        cd $(System.DefaultWorkingDirectory)
+        python -m venv scripts/.venv
+        source scripts/.venv/bin/activate
+        pip install -r ./scripts/requirements.txt
+      displayName: 'Install Dependencies'
+
+    # the prepdocs.sh script uses the azd command, so we need to install it, then log in
+    - bash: |
+        curl -fsSL https://aka.ms/install-azd.sh | bash 
+      displayName: 'Install AZD Utility'
+
+    - bash: |
+        azd auth login --tenant-id $(adTenantId) --client-id $(adClientId) --client-secret $(adClientSecret)
+      displayName: azd login
+
+    - bash: |
+        ./scripts/.venv/bin/python3 ./scripts/prepdocs.py './data/*' --storageaccount '$(AZURE_STORAGE_ACCOUNT)' --container '$(AZURE_STORAGE_CONTAINER)' --searchservice '$(AZURE_SEARCH_SERVICE)' --index '$(AZURE_SEARCH_INDEX)' --formrecognizerservice '$(AZURE_FORMRECOGNIZER_SERVICE)' --tenantid '$(adTenantId)' -v
+      displayName: Process Documents
+
+    - bash: |
+        azd auth logout
+      displayName: azd logout
