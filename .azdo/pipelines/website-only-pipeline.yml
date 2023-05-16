@@ -10,14 +10,14 @@ pool: Default
 # ----------------------------------------------------------------------------------------------------
 trigger:
   # since this repo has both AzDO and GHA pipelines, nothing is run automatically...
-  - none
+  # - none
   # batch: true
   # branches:
   #   include:
   #     - main
-  # paths:
-  #   include:
-  #     - 'src/*'
+  paths:
+    include:
+      - 'app/*'
   #   exclude: 
   #     - '**/*.yml'
   #     - '**/*.yaml'
