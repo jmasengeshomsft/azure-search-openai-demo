@@ -80,13 +80,23 @@ stages:
         curl -fsSL https://aka.ms/install-azd.sh | bash 
       displayName: 'Install AZD Utility'
 
-    - bash: |
-        azd auth login --tenant-id $(adTenantId) --client-id $(adClientId) --client-secret $(adClientSecret)
-      displayName: azd login
+    # - bash: |
+    #     azd auth login --tenant-id $(adTenantId) --client-id $(adClientId) --client-secret $(adClientSecret)
+    #   displayName: azd login
 
-    - bash: |
-        ./scripts/.venv/bin/python3 ./scripts/prepdocs.py './data/*' --storageaccount '$(AZURE_STORAGE_ACCOUNT)' --container '$(AZURE_STORAGE_CONTAINER)' --searchservice '$(AZURE_SEARCH_SERVICE)' --index '$(AZURE_SEARCH_INDEX)' --formrecognizerservice '$(AZURE_FORMRECOGNIZER_SERVICE)' --tenantid '$(adTenantId)' -v
-      displayName: Process Documents
+    # - bash: |
+    #     ./scripts/.venv/bin/python3 ./scripts/prepdocs.py './data/*' --storageaccount '$(AZURE_STORAGE_ACCOUNT)' --container '$(AZURE_STORAGE_CONTAINER)' --searchservice '$(AZURE_SEARCH_SERVICE)' --index '$(AZURE_SEARCH_INDEX)' --formrecognizerservice '$(AZURE_FORMRECOGNIZER_SERVICE)' --tenantid '$(adTenantId)' -v
+    #   displayName: Process Documents
+
+    - task: AzureCLI@2
+      displayName: 'Process Documents'
+      inputs:
+        scriptType: bash
+        scriptLocation: inlineScript
+        azureSubscription: 'jm-open-ai-sp'
+        addSpnToEnvironment: true
+        inlineScript: |
+          ./scripts/.venv/bin/python3 ./scripts/prepdocs.py './data/*' --storageaccount '$(AZURE_STORAGE_ACCOUNT)' --container '$(AZURE_STORAGE_CONTAINER)' --searchservice '$(AZURE_SEARCH_SERVICE)' --index '$(AZURE_SEARCH_INDEX)' --formrecognizerservice '$(AZURE_FORMRECOGNIZER_SERVICE)' --tenantid '$(adTenantId)' -v
 
     - bash: |
         azd auth logout
